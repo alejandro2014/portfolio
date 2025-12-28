@@ -1,6 +1,7 @@
 from PIL import Image
 from PIL.ExifTags import TAGS
 import os
+import sys
 
 class ImageConverter:        
     def compress_image_and_preserve_date(self, input_path, output_path):
@@ -10,18 +11,25 @@ class ImageConverter:
         #new_exif = self.encode_exif(new_exif)
 
         
-        """
-        original_size = image.size
-        aspect_ratio = original_size[0] / original_size[1]
-        new_width = 800
-        new_height = int(new_width / aspect_ratio)
-        """
+        size = self.calculate_new_size(img.size)
         
-        size = (img.size[0]/3,  img.size[1]/3)
         img.thumbnail(size)
         
         img.save(output_path, "JPEG", optimize=True, quality=75, exif=img.getexif())
         
+    def calculate_new_size(size, original_size):
+        target_width = 1600
+        width, height = original_size
+
+        if width <= target_width:
+            return original_size
+        
+        aspect_ratio = width / height
+        new_width = target_width
+        new_height = int(new_width / aspect_ratio)
+
+        return new_width, new_height
+
     def truncate_exif(self, exif_data):
         new_exif = {}
         
@@ -49,8 +57,8 @@ class ImageConverter:
         
         return exif_bytes
 
-input_image_path = 'picture1.jpg'
-output_image_path = 'picture1-out.jpg'
+input_image_path = sys.argv[1]
+output_image_path = sys.argv[2]
 
 image_converter = ImageConverter()
 image_converter.compress_image_and_preserve_date(input_image_path, output_image_path)
