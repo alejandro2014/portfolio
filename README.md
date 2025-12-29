@@ -1,0 +1,1 @@
+curl -X POST -F "file=@..." http://127.0.0.1:8000/simplify-image --output output.jpg
